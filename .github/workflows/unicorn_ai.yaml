@@ -15,6 +15,7 @@ jobs:
       - name: Global Newman
         run: |
           npm install -g newman
+          npm install -g newman-reporter-htmlextra
 
       - name: Fetch new test cases in Postman Collection
         env:
@@ -34,7 +35,8 @@ jobs:
         run: |
           newman run version1.json \
             -e non-prod.postman_environment.json \
-            --env-var "client_secret=$CLIENT_SECRET"
+            --env-var "client_secret=$CLIENT_SECRET" \
+            -r htmlextra --reporter-htmlextra-export myReport.html --reporter-htmlextra-darkTheme
 
       - name: Send HTML Report Link to Slack
         env:
@@ -42,6 +44,7 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
+          cat myReport.html
           # Generate the URL for the HTML report in the default Newman folder
           html_report_url="https://github.com/$GITHUB_REPOSITORY/_workflows/runs/$GITHUB_RUN_ID/artifacts/newman/Run\ 1/HTML/Run\ 1.html"
 
@@ -53,7 +56,7 @@ jobs:
                 "fallback": "Unicorn Brain Test Report",
                 "color": "#36a64f",
                 "title": "Unicorn Brain Test Report",
-                "title_link": "'"$html_report_url"'"           
+                "title_link": "'"myReport.html"'"           
               }
             ]
           }'
