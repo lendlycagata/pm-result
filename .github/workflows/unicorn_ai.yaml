@@ -15,7 +15,6 @@ jobs:
       - name: Global Newman
         run: |
           npm install -g newman
-          npm install -g newman newman-reporter-htmlextra
 
       - name: Fetch new test cases in Postman Collection
         env:
@@ -33,17 +32,9 @@ jobs:
         env:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         run: |
-          mkdir -p ./reports
           newman run version1.json \
             -e non-prod.postman_environment.json \
-            --env-var "client_secret=$CLIENT_SECRET" \
-            -r htmlextra --reporter-htmlextra-export ./reports/htmlreport.html --reporter-htmlextra-darkTheme
-
-      - name: Upload HTML Report as Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: newman-reports
-          path: ./reports
+            --env-var "client_secret=$CLIENT_SECRET"
 
       - name: Send HTML Report Link to Slack
         env:
@@ -51,10 +42,8 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
-          ls ./reports  # List contents of the reports directory
-
-          # Generate the URL for the HTML report based on the artifact path
-          html_report_url="https://github.com/$GITHUB_REPOSITORY/_workflows/runs/$GITHUB_RUN_ID/artifacts/newman-reports/htmlreport.html"
+          # Generate the URL for the HTML report in the default Newman folder
+          html_report_url="https://github.com/$GITHUB_REPOSITORY/_workflows/runs/$GITHUB_RUN_ID/artifacts/newman/Run\ 1/HTML/Run\ 1.html"
 
           # Prepare the Slack message with a clickable link
           payload='{
