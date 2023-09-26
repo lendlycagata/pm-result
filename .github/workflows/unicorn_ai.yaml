@@ -40,7 +40,6 @@ jobs:
 
       - name: Send report to Slack
         run: |
-          cat docs/report.html
           curl -X POST -H 'Content-type: application/json' \
           --data '{"text":"Newman HTML report", "attachments":[{"text":"Postman test report","fallback":"Report Link","color":"#36a64f","attachment_type":"default","actions":[{"type":"button","text":"View Report","url":"https://$GITHUB_REPOSITORY.github.io/docs/report.html"}]}]}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
