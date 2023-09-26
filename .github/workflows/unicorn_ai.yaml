@@ -44,7 +44,6 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
-          cat myReport.html
           # Generate the URL for the HTML report in the default Newman folder
           html_report_url="https://github.com/$GITHUB_REPOSITORY/_workflows/runs/$GITHUB_RUN_ID/artifacts/newman/Run\ 1/HTML/Run\ 1.html"
 
@@ -56,7 +55,7 @@ jobs:
                 "fallback": "Unicorn Brain Test Report",
                 "color": "#36a64f",
                 "title": "Unicorn Brain Test Report",
-                "title_link": "'"myReport.html"'"           
+                "title_link": "'"$myReport.html"'"           
               }
             ]
           }'
