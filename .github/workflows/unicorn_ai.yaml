@@ -42,44 +42,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: newman-reports
-          path: ./reports/htmlreport.html
-      # - name: Publish report
-      #   uses: MeilCli/slack-upload-file@v1
-      #   with:
-      #     slack_token: ${{ secrets.SLACK_TOKEN }}
-      #     file_path: './reports/htmlreport.html'
-      #     file_name: 'htmlreport.html'
-      #     file_type: 'html'
-      #     channels: 'unicorn-qa'
-
-      # - name: Upload HTML Report
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: newman-reports
-      #     path: newman/
-
-      # - name: List Files in HTML Report Directory
-      #   run: |
-      #     ls -R newman-reports
-
-      # - name: Download HTML Report Artifact
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: newman-reports
-
-      # - name: Commit and Push Changes
-      #   uses: stefanzweifel/git-auto-commit-action@v4
-      #   with:
-      #     commit_message: 'Demo newman collection'
-      #     push_options: '--force'
-      #     env:
-      #     GITHUB_TOKEN: ${{ secrets.TOKEN }}
-      #     run: |
-      #       echo "Starting Git Commit and Push"
-      #       git status  # Add this line to see the repository status before the commit and push.
-      #       git commit -am "Demo newman collection"
-      #       git push --force
-      #       echo "Git Commit and Push completed"
+          path: ./reports
 
       - name: Send HTML Report Link to Slack
         env:
@@ -87,9 +50,9 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
-          ls
-          cat './reports/htmlreport.html'
+          ls ./reports  # List contents of the reports directory
 
+          # Generate the URL for the HTML report based on the artifact path
           html_report_url="https://github.com/$GITHUB_REPOSITORY/_workflows/runs/$GITHUB_RUN_ID/artifacts/newman-reports/htmlreport.html"
 
           # Prepare the Slack message with a clickable link
