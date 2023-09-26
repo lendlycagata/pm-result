@@ -1,24 +1,18 @@
 name: Unicorn Brain Automation Tests
-
-on:
-  push:
-    branches:
-      - main
+on: push
 
 jobs:
   unicorn-brain-api:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - name: Node Installation
+        uses: actions/setup-node@v1
         with:
           node-version: '18'
 
-      - name: Install Newman
+      - name: Global Newman
         run: |
           npm install -g newman
           npm install -g newman-reporter-htmlextra
@@ -28,7 +22,7 @@ jobs:
           COLLECTION_URL: ${{ secrets.COLLECTION_URL }}
           POSTMAN_ACCESS_KEY: ${{ secrets.POSTMAN_ACCESS_KEY }}
         run: |
-          curl -o version1.json -L "${COLLECTION_URL}?access_key=${POSTMAN_ACCESS_KEY}"
+          curl -o version1.json -L ${COLLECTION_URL}access_key=${POSTMAN_ACCESS_KEY}
 
       - name: Format JSON
         run: |
