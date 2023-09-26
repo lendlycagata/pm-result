@@ -83,6 +83,7 @@ jobs:
           # GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
           html_report_url= './reports/htmlreport.html'
+          cat html_report_url
           # Prepare the Slack message with a clickable link
           payload='{
             "text": "Newman Test Report",
