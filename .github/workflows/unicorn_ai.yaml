@@ -36,8 +36,13 @@ jobs:
           newman run version1.json \
             -e non-prod.postman_environment.json \
             --env-var "client_secret=$CLIENT_SECRET" \
-            -r htmlextra --reporter-htmlextra-export ./reports/htmlreport.html --reporter-htmlextra-darkTheme  > runreport1.html
+            -r htmlextra --reporter-htmlextra-export ./reports/htmlreport.html --reporter-htmlextra-darkTheme
 
+      - name: Upload HTML Report as Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: newman-reports
+          path: ./reports/htmlreport.html
       # - name: Publish report
       #   uses: MeilCli/slack-upload-file@v1
       #   with:
@@ -85,7 +90,7 @@ jobs:
           ls
           cat './reports/htmlreport.html'
 
-          html_report_url="https://github.com/$GITHUB_REPOSITORY/_workflows/runs/$GITHUB_RUN_ID/artifacts/reports/htmlreport.html"
+          html_report_url="https://github.com/$GITHUB_REPOSITORY/_workflows/runs/$GITHUB_RUN_ID/artifacts/newman-reports/htmlreport.html"
 
           # Prepare the Slack message with a clickable link
           payload='{
