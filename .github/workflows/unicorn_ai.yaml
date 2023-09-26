@@ -35,13 +35,14 @@ jobs:
         run: |
           newman run version1.json \
             -e non-prod.postman_environment.json \
-            --env-var "client_secret=$CLIENT_SECRET"
+            --env-var "client_secret=$CLIENT_SECRET" \
+            --reporters htmlextra
 
-      # - name: Upload HTML Report
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: newman-reports
-      #     path: newman/
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: newman-reports
+          path: newman/
 
       # - name: Commit and Push Changes
       #   uses: stefanzweifel/git-auto-commit-action@v4
