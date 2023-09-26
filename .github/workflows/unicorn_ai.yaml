@@ -46,12 +46,18 @@ jobs:
           path: newman/
 
       - name: Commit and Push Changes
-        uses: stefanzweifel/git-auto-commit-action@976f22029fe5ee84057c18c4807b8c727952a393
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Update Postman collection
-          push_options: --force
-        env:
+          commit_message: 'Demo newman collection'
+          push_options: '--force'
+          env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: |
+            echo "Starting Git Commit and Push"
+            git status  # Add this line to see the repository status before the commit and push.
+            git commit -am "Demo newman collection"
+            git push --force
+            echo "Git Commit and Push completed"
 
       - name: Send HTML Report Link to Slack
         env:
