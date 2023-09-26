@@ -56,7 +56,7 @@ jobs:
                 "fallback": "Unicorn Brain Test Report",
                 "color": "#36a64f",
                 "title": "Unicorn Brain Test Report",
-                "text": "'"$report_contents"'"         
+                "title_link": "'"$report_contents"'"           
               }
             ]
           }'
