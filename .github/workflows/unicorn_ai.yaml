@@ -19,8 +19,8 @@ jobs:
 
       - name: Fetch new test cases in Postman Collection
         env:
-          COLLECTION_URL: ${{ secrets.VECTORDB_COLLECTION_URL }}
-          POSTMAN_ACCESS_KEY: ${{ secrets.VECTORDB_ACCESS_KEY }}
+          COLLECTION_URL: ${{ secrets.COLLECTION_URL }}
+          POSTMAN_ACCESS_KEY: ${{ secrets.POSTMAN_ACCESS_KEY }}
         run: |
           curl -o vectordb.json -L ${COLLECTION_URL}access_key=${POSTMAN_ACCESS_KEY}
 
