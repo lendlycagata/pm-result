@@ -15,7 +15,6 @@ jobs:
       - name: Global Newman
         run: |
           npm install -g newman
-          npm install -g newman-reporter-htmlextra
 
       - name: Fetch new test cases in Postman Collection
         env:
@@ -36,24 +35,19 @@ jobs:
           newman run version1.json \
             -e non-prod.postman_environment.json \
             --env-var "client_secret=$CLIENT_SECRET" \
-            -r htmlextra --reporter-htmlextra-export myReport.html --reporter-htmlextra-darkTheme
+            --reporters htmlextra \
+            --reporter-htmlextra-export report.html
 
-      - name: Send HTML Report Link to Slack
+      - name: Send report to Slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"Newman HTML report", "attachments":[{"text":"Postman test report","fallback":"Report Link","color":"#36a64f","attachment_type":"default","actions":[{"type":"button","text":"View Report","url":"file://$GITHUB_WORKSPACE/report.html"}]}]}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          cat myReport.html         
-          payload='{
-            "text": "Newman Test Report",
-            "attachments": [
-              {
-                "fallback": "Unicorn Brain Test Report",
-                "color": "#36a64f",
-                "title": "Unicorn Brain Test Report",
-                "title_link": "myReport.html"           
-              }
-            ]
-          }'
 
-          # Send the payload to Slack
-          curl -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
+      - name: Upload HTML report as an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: newman-html-report
+          path: report.html
