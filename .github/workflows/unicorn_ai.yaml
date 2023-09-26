@@ -35,8 +35,7 @@ jobs:
         run: |
           newman run version1.json \
             -e non-prod.postman_environment.json \
-            --env-var "client_secret=$CLIENT_SECRET" \
-            --reporters htmlextra
+            --env-var "client_secret=$CLIENT_SECRET"
 
       # - name: Upload HTML Report
       #   uses: actions/upload-artifact@v2
