@@ -23,6 +23,7 @@ jobs:
           POSTMAN_ACCESS_KEY: ${{ secrets.POSTMAN_ACCESS_KEY }}
         run: |
           curl -o version1.json -L ${COLLECTION_URL}access_key=${POSTMAN_ACCESS_KEY}
+          cat version1.json
 
       - name: Format JSON
         run: |
@@ -32,7 +33,6 @@ jobs:
       - name: Run Collection with OAuth2.0
         env:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-
         run: |
           newman run version1.json \
             -e non-prod.postman_environment.json \
