@@ -84,8 +84,8 @@ jobs:
         run: |
           ls
           cat './reports/htmlreport.html'
-          # Generate the URL for the HTML report
-          html_report_url="https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts/newman-reports/htmlreport/index.html"
+
+          html_report_url="https://github.com/$GITHUB_REPOSITORY/_workflows/runs/$GITHUB_RUN_ID/artifacts/reports/htmlreport.html"
 
           # Prepare the Slack message with a clickable link
           payload='{
@@ -95,7 +95,7 @@ jobs:
                 "fallback": "Unicorn Brain Test Report",
                 "color": "#36a64f",
                 "title": "Unicorn Brain Test Report",
-                "title_link": "'"./reports/htmlreport.html"'"             
+                "title_link": "'"$html_report_url"'"           
               }
             ]
           }'
