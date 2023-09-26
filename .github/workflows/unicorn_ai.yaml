@@ -36,12 +36,12 @@ jobs:
             -e non-prod.postman_environment.json \
             --env-var "client_secret=$CLIENT_SECRET" \
             --reporters htmlextra \
-            --reporter-htmlextra-export report.html
+            --reporter-htmlextra-export docs/report.html
 
       - name: Send report to Slack
         run: |
           curl -X POST -H 'Content-type: application/json' \
-            --data '{"text":"Newman HTML report", "attachments":[{"text":"Postman test report","fallback":"Report Link","color":"#36a64f","attachment_type":"default","actions":[{"type":"button","text":"View Report","url":"file://$GITHUB_WORKSPACE/report.html"}]}]}' \
+          --data '{"text":"Newman HTML report", "attachments":[{"text":"Postman test report","fallback":"Report Link","color":"#36a64f","attachment_type":"default","actions":[{"type":"button","text":"View Report","url":"https://github.com/$GITHUB_REPOSITORY/blob/gh-pages/docs/report.html"}]}]}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
