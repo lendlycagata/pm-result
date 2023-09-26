@@ -36,17 +36,26 @@ jobs:
           newman run version1.json \
             -e non-prod.postman_environment.json \
             --env-var "client_secret=$CLIENT_SECRET" \
-            --reporters htmlextra --reporter-htmlextra-export newman-reports/htmlreport/index.html
+            -r htmlextra --reporter-htmlextra-export htmlreport.html --reporter-htmlextra-darkTheme  > runreport1.html
 
-      - name: Upload HTML Report
-        uses: actions/upload-artifact@v2
+      - name: Publish report
+        uses: MeilCli/slack-upload-file@v1
         with:
-          name: newman-reports
-          path: newman/
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          file_path: './tests/htmlreport.html'
+          file_name: 'postmanReport.html'
+          file_type: 'html'
+          channels: 'api-test-reports'
 
-      - name: List Files in HTML Report Directory
-        run: |
-          ls -R newman-reports
+      # - name: Upload HTML Report
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: newman-reports
+      #     path: newman/
+
+      # - name: List Files in HTML Report Directory
+      #   run: |
+      #     ls -R newman-reports
 
       # - name: Download HTML Report Artifact
       #   uses: actions/download-artifact@v2
@@ -67,27 +76,27 @@ jobs:
       #       git push --force
       #       echo "Git Commit and Push completed"
 
-      - name: Send HTML Report Link to Slack
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
-        run: |
-          # Generate the URL for the HTML report
-          html_report_url="https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts/newman-reports/htmlreport/index.html"
+      # - name: Send HTML Report Link to Slack
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     GITHUB_REPOSITORY: ${{ github.repository }}
+      #     GITHUB_RUN_ID: ${{ github.run_id }}
+      #   run: |
+      #     # Generate the URL for the HTML report
+      #     html_report_url="https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts/newman-reports/htmlreport/index.html"
 
-          # Prepare the Slack message with a clickable link
-          payload='{
-            "text": "Newman Test Report",
-            "attachments": [
-              {
-                "fallback": "Newman Test Report",
-                "color": "#36a64f",
-                "title": "Test Report",
-                "title_link": "'"$html_report_url"'"
-              }
-            ]
-          }'
+      #     # Prepare the Slack message with a clickable link
+      #     payload='{
+      #       "text": "Newman Test Report",
+      #       "attachments": [
+      #         {
+      #           "fallback": "Newman Test Report",
+      #           "color": "#36a64f",
+      #           "title": "Test Report",
+      #           "title_link": "'"$html_report_url"'"
+      #         }
+      #       ]
+      #     }'
 
-          # Send the payload to Slack
-          curl -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
+      #     # Send the payload to Slack
+      #     curl -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
