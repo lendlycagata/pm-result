@@ -36,14 +36,14 @@ jobs:
           newman run version1.json \
             -e non-prod.postman_environment.json \
             --env-var "client_secret=$CLIENT_SECRET" \
-            -r htmlextra --reporter-htmlextra-export htmlreport.html --reporter-htmlextra-darkTheme  > runreport1.html
+            -r htmlextra --reporter-htmlextra-export ./reports/htmlreport.html --reporter-htmlextra-darkTheme  > runreport1.html
 
       - name: Publish report
         uses: MeilCli/slack-upload-file@v1
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           file_path: './reports/htmlreport.html'
-          file_name: 'postmanReport.html'
+          file_name: 'htmlreport.html'
           file_type: 'html'
           channels: 'unicorn-qa'
 
