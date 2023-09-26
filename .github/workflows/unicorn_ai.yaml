@@ -51,7 +51,7 @@ jobs:
           commit_message: 'Demo newman collection'
           push_options: '--force'
           env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
           run: |
             echo "Starting Git Commit and Push"
             git status  # Add this line to see the repository status before the commit and push.
