@@ -42,10 +42,10 @@ jobs:
         uses: MeilCli/slack-upload-file@v1
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
-          file_path: './tests/htmlreport.html'
+          file_path: './reports/htmlreport.html'
           file_name: 'postmanReport.html'
           file_type: 'html'
-          channels: 'api-test-reports'
+          channels: 'unicorn-qa'
 
       # - name: Upload HTML Report
       #   uses: actions/upload-artifact@v2
