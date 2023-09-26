@@ -38,16 +38,17 @@ jobs:
             --env-var "client_secret=$CLIENT_SECRET" \
             -r htmlextra --reporter-htmlextra-export myReport.html --reporter-htmlextra-darkTheme
 
+      - name: Read HTML Report Contents
+        id: read_report_contents
+        run: |
+          html_report_contents=$(cat myReport.html)
+          echo "::set-output name=report_contents::$html_report_contents"
+
       - name: Send HTML Report Link to Slack
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
-          # Generate the URL for the HTML report in the default Newman folder
-          html_report_url="https://github.com/$GITHUB_REPOSITORY/_workflows/runs/$GITHUB_RUN_ID/artifacts/newman/Run\ 1/HTML/Run\ 1.html"
-
-          # Prepare the Slack message with a clickable link
+          report_contents="${{ steps.read_report_contents.outputs.report_contents }}"          
           payload='{
             "text": "Newman Test Report",
             "attachments": [
@@ -55,7 +56,7 @@ jobs:
                 "fallback": "Unicorn Brain Test Report",
                 "color": "#36a64f",
                 "title": "Unicorn Brain Test Report",
-                "title_link": "'"$myReport.html"'"           
+                "text": "'"$report_contents"'"         
               }
             ]
           }'
