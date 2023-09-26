@@ -26,15 +26,15 @@ jobs:
 
       - name: Format JSON
         run: |
-          jq . vectordb.json > vectordb_formatted.json
-          mv vectordb_formatted.json vectordb.json
+          jq . version1.json > vectordb_formatted.json
+          mv vectordb_formatted.json version1.json
 
       - name: Run Collection with OAuth2.0
         env:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
 
         run: |
-          newman run vectordb.json \
+          newman run version1.json \
             -e non-prod.postman_environment.json \
             --env-var "client_secret=$CLIENT_SECRET" \
             --reporters htmlextra
