@@ -80,21 +80,22 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          # GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
-          ls -l ./reports/htmlreport.html
-          lsof ./reports/htmlreport.html
-          html_report_url= './reports/htmlreport.html'
+          ls
+          cat './reports/htmlreport.html'
+          # Generate the URL for the HTML report
+          html_report_url="https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts/newman-reports/htmlreport/index.html"
 
           # Prepare the Slack message with a clickable link
           payload='{
             "text": "Newman Test Report",
             "attachments": [
               {
-                "fallback": "Newman Test Report",
+                "fallback": "Unicorn Brain Test Report",
                 "color": "#36a64f",
-                "title": "Test Report",
-                "title_link": "'"$html_report_url"'"
+                "title": "Unicorn Brain Test Report",
+                "title_link": "'"./reports/htmlreport.html"'"             
               }
             ]
           }'
