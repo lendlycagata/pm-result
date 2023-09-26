@@ -1,0 +1,79 @@
+name: Unicorn Brain Automation Tests
+on: push
+
+jobs:
+  unicorn-brain-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Node Installation
+        uses: actions/setup-node@v1
+        with:
+          node-version: '18'
+
+      - name: Global Newman
+        run: |
+          npm install -g newman
+          npm install -g newman newman-reporter-htmlextra
+
+      - name: Fetch new test cases in Postman Collection
+        env:
+          COLLECTION_URL: ${{ secrets.VECTORDB_COLLECTION_URL }}
+          POSTMAN_ACCESS_KEY: ${{ secrets.VECTORDB_ACCESS_KEY }}
+        run: |
+          curl -o vectordb.json -L ${COLLECTION_URL}access_key=${POSTMAN_ACCESS_KEY}
+
+      - name: Format JSON
+        run: |
+          jq . vectordb.json > vectordb_formatted.json
+          mv vectordb_formatted.json vectordb.json
+
+      - name: Run Collection with OAuth2.0
+        env:
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
+        run: |
+          newman run vectordb.json \
+            -e non-prod.postman_environment.json \
+            --env-var "client_secret=$CLIENT_SECRET" \
+            --reporters htmlextra
+
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: newman-reports
+          path: newman/
+
+      - name: Commit and Push Changes
+        uses: stefanzweifel/git-auto-commit-action@3d1b5e078a85df99db0cb2441cd4309b09d86253
+        with:
+          commit_message: Update Postman collection
+          push_options: --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send HTML Report Link to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          # Generate the URL for the HTML report
+          html_report_url="https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts/newman-reports/htmlreport/index.html"
+
+          # Prepare the Slack message with a clickable link
+          payload='{
+            "text": "Newman Test Report",
+            "attachments": [
+              {
+                "fallback": "Newman Test Report",
+                "color": "#36a64f",
+                "title": "Test Report",
+                "title_link": "'"$html_report_url"'"
+              }
+            ]
+          }'
+
+          # Send the payload to Slack
+          curl -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
