@@ -1,12 +1,7 @@
 name: Newman API Tests
-on:
-  workflow_dispatch:
+on: push
 jobs:
-  test:
-    defaults:
-      run:
-        working-directory: ./tests
-    environment: staging
+  unicorn-brain-api:
     name: 'Run tests'
     runs-on: ubuntu-latest
     steps:
