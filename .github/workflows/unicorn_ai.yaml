@@ -1,33 +1,23 @@
-name: Unicorn Brain Automation Tests
-on: push
-
+name: Newman API Tests
+on:
+  workflow_dispatch:
 jobs:
-  unicorn-brain-api:
+  test:
+    defaults:
+      run:
+        working-directory: ./tests
+    environment: staging
+    name: 'Run tests'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      - name: Node Installation
-        uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
           node-version: '18'
-
-      - name: Global Newman
-        run: |
-          npm install -g newman
-
-      - name: Fetch new test cases in Postman Collection
-        env:
-          COLLECTION_URL: ${{ secrets.COLLECTION_URL }}
-          POSTMAN_ACCESS_KEY: ${{ secrets.POSTMAN_ACCESS_KEY }}
-        run: |
-          curl -o version1.json -L ${COLLECTION_URL}access_key=${POSTMAN_ACCESS_KEY}
-
-      - name: Format JSON
-        run: |
-          jq . version1.json > version1_formatted.json
-          mv version1_formatted.json version1.json
-
+      - name: 'Install newman'
+        run: 'npm install -g newman'
+      - name: 'Install newman reporter'
+        run: 'npm install -g newman-reporter-htmlextra'
       - name: Run Collection with OAuth2.0
         env:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
@@ -35,19 +25,13 @@ jobs:
           newman run version1.json \
             -e non-prod.postman_environment.json \
             --env-var "client_secret=$CLIENT_SECRET" \
-            --reporters htmlextra \
-            --reporter-htmlextra-export docs/report.html
+            -r htmlextra --reporter-htmlextra-export htmlreport.html --reporter-htmlextra-darkTheme  > runreport1.html
 
-      - name: Send report to Slack
-        run: |
-          curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"Newman HTML report", "attachments":[{"text":"Postman test report","fallback":"Report Link","color":"#36a64f","attachment_type":"default","actions":[{"type":"button","text":"View Report","url":"https://$GITHUB_REPOSITORY.github.io/docs/report.html"}]}]}' \
-          ${{ secrets.SLACK_WEBHOOK_URL }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: Upload HTML report as an artifact
-        uses: actions/upload-artifact@v2
+      - name: Publish Slack Report
+        uses: MeilCli/slack-upload-file@v1
         with:
-          name: newman-html-report
-          path: report.html
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          file_path: '/htmlreport.html'
+          file_name: 'postmanReport.html'
+          file_type: 'html'
+          channels: 'unicorn-qa'
