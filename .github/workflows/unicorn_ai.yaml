@@ -13,6 +13,19 @@ jobs:
         run: 'npm install -g newman'
       - name: 'Install newman reporter'
         run: 'npm install -g newman-reporter-htmlextra'
+
+      - name: Fetch new test cases in Postman Collection
+        env:
+          COLLECTION_URL: ${{ secrets.COLLECTION_URL }}
+          POSTMAN_ACCESS_KEY: ${{ secrets.POSTMAN_ACCESS_KEY }}
+        run: |
+          curl -o version1.json -L ${COLLECTION_URL}access_key=${POSTMAN_ACCESS_KEY}
+
+      - name: Format JSON
+        run: |
+          jq . version1.json > version1_formatted.json
+          mv version1_formatted.json version1.json
+
       - name: Run Collection with OAuth2.0
         env:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
