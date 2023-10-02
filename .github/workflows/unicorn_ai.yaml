@@ -22,23 +22,34 @@ jobs:
         run: |
           newman run unicorn-brain-2.0.postman_collection.json \
             -e non-prod.postman_environment.json \
-            --env-var "client_secret=$CLIENT_SECRET"
+            --env-var "client_secret=$CLIENT_SECRET" \
+            --reporters htmlextra
 
-      - name: Create Status Check based on Postman Results
-        id: process-postman
-        uses: im-open/process-postman-test-results@v2.1.5
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          results-file: ${{ github.workspace }}/newman/non-prod.postman_environment.json
-          report-name: 'Postman ${{ github.run_number }}'
-          create-status-check: true
-          create-pr-comment: false
-          update-comment-if-one-exists: false
-          ignore-test-failures: true
-          timezone: 'america/denver'
+          name: newman-reports
+          path: newman/    
 
-      - name: Fail on Test Failures
-        if: steps.process-postman.outcome == 'failure'
+      - name: Print report
         run: |
-          echo "There were Postman test failures."
-          exit 1
+          cat newman/*.*    
+
+      # - name: Create Status Check based on Postman Results
+      #   id: process-postman
+      #   uses: im-open/process-postman-test-results@v2.1.5
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     results-file: ${{ github.workspace }}/newman/non-prod.postman_environment.json
+      #     report-name: 'Postman ${{ github.run_number }}'
+      #     create-status-check: true
+      #     create-pr-comment: false
+      #     update-comment-if-one-exists: false
+      #     ignore-test-failures: true
+      #     timezone: 'america/denver'
+
+      # - name: Fail on Test Failures
+      #   if: steps.process-postman.outcome == 'failure'
+      #   run: |
+      #     echo "There were Postman test failures."
+      #     exit 1
