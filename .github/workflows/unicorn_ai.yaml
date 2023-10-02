@@ -18,8 +18,7 @@ jobs:
         env:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         run: |
-          newman run demo-vector.postman_collection.json \
+          newman run unicorn-brain-2.0.postman_collection.json \
             -e non-prod.postman_environment.json \
             --env-var "client_secret=$CLIENT_SECRET"
-            
-             
+
