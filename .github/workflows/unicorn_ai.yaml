@@ -31,25 +31,25 @@ jobs:
           name: newman-reports
           path: newman/    
 
-      - name: Print report
-        run: |
-          cat newman/*.*    
-
-      # - name: Create Status Check based on Postman Results
-      #   id: process-postman
-      #   uses: im-open/process-postman-test-results@v2.1.5
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     results-file: ${{ github.workspace }}/newman/non-prod.postman_environment.json
-      #     report-name: 'Postman ${{ github.run_number }}'
-      #     create-status-check: true
-      #     create-pr-comment: false
-      #     update-comment-if-one-exists: false
-      #     ignore-test-failures: true
-      #     timezone: 'america/denver'
-
-      # - name: Fail on Test Failures
-      #   if: steps.process-postman.outcome == 'failure'
+      # - name: Print report
       #   run: |
-      #     echo "There were Postman test failures."
-      #     exit 1
+      #     cat newman/*.*    
+
+      - name: Create Status Check based on Postman Results
+        id: process-postman
+        uses: im-open/process-postman-test-results@v2.1.5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          results-file: ${{ github.workspace }}/newman/*.*
+          report-name: 'Postman ${{ github.run_number }}'
+          create-status-check: true
+          create-pr-comment: false
+          update-comment-if-one-exists: false
+          ignore-test-failures: true
+          timezone: 'america/denver'
+
+      - name: Fail on Test Failures
+        if: steps.process-postman.outcome == 'failure'
+        run: |
+          echo "There were Postman test failures."
+          exit 1
