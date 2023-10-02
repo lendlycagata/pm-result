@@ -5,14 +5,16 @@ jobs:
     name: 'Run tests'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
           node-version: '18'
-      - name: 'Install newman'
-        run: 'npm install -g newman'
-      - name: 'Install newman reporter'
-        run: 'npm install -g newman-reporter-htmlextra'
+      - name: Install Newman
+        run: npm install -g newman
+      - name: Install Newman Reporter
+        run: npm install -g newman-reporter-htmlextra
 
       - name: Run Collection with OAuth2.0
         env:
@@ -22,3 +24,21 @@ jobs:
             -e non-prod.postman_environment.json \
             --env-var "client_secret=$CLIENT_SECRET"
 
+      - name: Create Status Check based on Postman Results
+        id: process-postman
+        uses: im-open/process-postman-test-results@v2.1.5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          results-file: ${{ github.workspace }}/newman/non-prod.postman_environment.json
+          report-name: 'Postman ${{ github.run_number }}'
+          create-status-check: true
+          create-pr-comment: false
+          update-comment-if-one-exists: false
+          ignore-test-failures: true
+          timezone: 'america/denver'
+
+      - name: Fail on Test Failures
+        if: steps.process-postman.outcome == 'failure'
+        run: |
+          echo "There were Postman test failures."
+          exit 1
