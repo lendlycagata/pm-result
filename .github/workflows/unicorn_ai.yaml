@@ -21,26 +21,16 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         run: |
           newman run unicorn-brain-2.0.postman_collection.json \
-            -e non-prod.postman_environment.json \
-            --env-var "client_secret=$CLIENT_SECRET" \
-            --reporters htmlextra
-
-      - name: Upload HTML Report
-        uses: actions/upload-artifact@v2
-        with:
-          name: newman-reports
-          path: newman/    
-
-      - name: Print report
-        run: |
-          cat newman/*.*    
+          -e non-prod.postman_environment.json \
+          --env-var "client_secret=$CLIENT_SECRET" \
+          --reporters json --reporter-json-export result.json  
 
       - name: Create Status Check based on Postman Results
         id: process-postman
         uses: im-open/process-postman-test-results@v2.1.5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          results-file: ${{ github.workspace }}/newman/your-html-report-file.html
+          results-file: result.json
           report-name: 'Postman ${{ github.run_number }}'
           create-status-check: true
           create-pr-comment: false
