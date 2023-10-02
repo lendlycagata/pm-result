@@ -14,32 +14,12 @@ jobs:
       - name: 'Install newman reporter'
         run: 'npm install -g newman-reporter-htmlextra'
 
-      - name: Fetch new test cases in Postman Collection
-        env:
-          COLLECTION_URL: ${{ secrets.COLLECTION_URL }}
-          POSTMAN_ACCESS_KEY: ${{ secrets.POSTMAN_ACCESS_KEY }}
-        run: |
-          curl -o version1.json -L ${COLLECTION_URL}access_key=${POSTMAN_ACCESS_KEY}
-
-      - name: Format JSON
-        run: |
-          jq . version1.json > version1_formatted.json
-          mv version1_formatted.json version1.json
-
       - name: Run Collection with OAuth2.0
         env:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         run: |
-          newman run version1.json \
+          newman run demo-vector.postman_collection.json \
             -e non-prod.postman_environment.json \
-            --env-var "client_secret=$CLIENT_SECRET" \
-            -r htmlextra --reporter-htmlextra-export runreport1.html --reporter-htmlextra-darkTheme
-
-      - name: Publish Slack Report
-        uses: MeilCli/slack-upload-file@v1
-        with:
-          slack_token: ${{ secrets.SLACK_TOKEN }}
-          file_path: 'runreport1.html'
-          file_name: 'postmanReport.html'
-          file_type: 'html'
-          channels: 'unicorn-qa'
+            --env-var "client_secret=$CLIENT_SECRET"
+            
+             
