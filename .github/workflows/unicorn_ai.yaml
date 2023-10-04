@@ -22,7 +22,8 @@ jobs:
         run: |
           newman run unicorn-brain-2.0.postman_collection.json \
           -e non-prod.postman_environment.json \
-          --env-var "client_secret=$CLIENT_SECRET" 
+          --env-var "client_secret=$CLIENT_SECRET" \
+          --reporters json --reporter-json-export result.json
 
       # - name: Create Status Check based on Postman Results
       #   id: process-postman
