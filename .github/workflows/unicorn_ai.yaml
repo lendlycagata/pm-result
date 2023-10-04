@@ -22,24 +22,23 @@ jobs:
         run: |
           newman run unicorn-brain-2.0.postman_collection.json \
           -e non-prod.postman_environment.json \
-          --env-var "client_secret=$CLIENT_SECRET" \
-          --reporters json --reporter-json-export result.json  
+          --env-var "client_secret=$CLIENT_SECRET" 
 
-      - name: Create Status Check based on Postman Results
-        id: process-postman
-        uses: lendly-telus-com/pm-result@master
-        with:
-          github-token: ${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}
-          results-file: result.json
-          report-name: 'Postman ${{ github.run_number }}'
-          create-status-check: true
-          create-pr-comment: true
-          update-comment-if-one-exists: false
-          ignore-test-failures: true
-          timezone: 'america/denver'
+      # - name: Create Status Check based on Postman Results
+      #   id: process-postman
+      #   uses: lendly-telus-com/pm-result@master
+      #   with:
+      #     github-token: ${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}
+      #     results-file: result.json
+      #     report-name: 'Postman ${{ github.run_number }}'
+      #     create-status-check: true
+      #     create-pr-comment: true
+      #     update-comment-if-one-exists: false
+      #     ignore-test-failures: true
+      #     timezone: 'america/denver'
 
-      - name: Fail on Test Failures
-        if: steps.process-postman.outcome == 'failure'
-        run: |
-          echo "There were Postman test failures."
-          exit 1
+      # - name: Fail on Test Failures
+      #   if: steps.process-postman.outcome == 'failure'
+      #   run: |
+      #     echo "There were Postman test failures."
+      #     exit 1
